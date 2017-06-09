@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"reflect"
 	"testing"
+
+	skipjack "github.com/dgryski/go-skipjack"
 )
 
 func unpack2x64(s string) []uint64 {
@@ -153,6 +155,20 @@ func BenchmarkTEA(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		teaEncrypt(p, k)
+	}
+
+	sink += uint64(p[0])
+}
+
+func BenchmarkSKIPJACK(b *testing.B) {
+
+	k := make([]byte, 10)
+	p := make([]byte, 8)
+
+	c, _ := skipjack.New(k)
+
+	for i := 0; i < b.N; i++ {
+		c.Encrypt(p, p)
 	}
 
 	sink += uint64(p[0])
