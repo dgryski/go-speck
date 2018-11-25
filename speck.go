@@ -7,13 +7,7 @@
 */
 package speck
 
-func rotl(x uint64, r uint) uint64 {
-	return (x << r) | (x >> (64 - r))
-}
-
-func rotr(x uint64, r uint) uint64 {
-	return (x << (64 - r)) | (x >> r)
-}
+import "math/bits"
 
 func ExpandKeyAndEncrypt(pt, ct, K []uint64) {
 
@@ -24,17 +18,17 @@ func ExpandKeyAndEncrypt(pt, ct, K []uint64) {
 	ct1 := pt[1]
 	for i := uint64(0); i < 32; i++ {
 		// encryption
-		ct1 = rotr(ct1, 8)
+		ct1 = bits.RotateLeft64(ct1, -8)
 		ct1 += ct0
 		ct1 ^= A
-		ct0 = rotl(ct0, 3)
+		ct0 = bits.RotateLeft64(ct0, 3)
 		ct0 ^= ct1
 
 		// inline key expansion phase
-		B = rotr(B, 8)
+		B = bits.RotateLeft64(B, -8)
 		B += A
 		B ^= i
-		A = rotl(A, 3)
+		A = bits.RotateLeft64(A, 3)
 		A ^= B
 	}
 
@@ -52,17 +46,17 @@ func ExpandKeyAndDecrypt(pt, ct, K []uint64) {
 	for i := uint64(0); i < 32; i++ {
 		// inline key expansion phase
 		A ^= B
-		A = rotr(A, 3)
+		A = bits.RotateLeft64(A, -3)
 		B ^= i
 		B -= A
-		B = rotl(B, 8)
+		B = bits.RotateLeft64(B, 8)
 
 		// decryption
 		ct0 ^= ct1
-		ct0 = rotr(ct0, 3)
+		ct0 = bits.RotateLeft64(ct0, -3)
 		ct1 ^= A
 		ct1 -= ct0
-		ct1 = rotl(ct1, 8)
+		ct1 = bits.RotateLeft64(ct1, 8)
 	}
 
 	ct[0] = ct0
@@ -70,15 +64,15 @@ func ExpandKeyAndDecrypt(pt, ct, K []uint64) {
 }
 
 func Encrypt(pt, ct, k []uint64) {
-	ct0 := pt[0]
 	ct1 := pt[1]
+	ct0 := pt[0]
 
 	for i := 0; i < 32; i++ {
 		// encryption
-		ct1 = rotr(ct1, 8)
+		ct1 = bits.RotateLeft64(ct1, -8)
 		ct1 += ct0
 		ct1 ^= k[i]
-		ct0 = rotl(ct0, 3)
+		ct0 = bits.RotateLeft64(ct0, 3)
 		ct0 ^= ct1
 	}
 
@@ -93,10 +87,10 @@ func Decrypt(pt, ct, k []uint64) {
 	for i := 31; i >= 0; i-- {
 		// encryption
 		ct0 ^= ct1
-		ct0 = rotr(ct0, 3)
+		ct0 = bits.RotateLeft64(ct0, -3)
 		ct1 ^= k[i]
 		ct1 -= ct0
-		ct1 = rotl(ct1, 8)
+		ct1 = bits.RotateLeft64(ct1, 8)
 	}
 
 	pt[0] = ct0
@@ -110,7 +104,7 @@ func ExpandKey(k, K []uint64) {
 	k[0] = K[0]
 
 	for i := uint64(0); i < 32-1; i++ {
-		l[i+1] = (k[i] + rotr(l[i], 8)) ^ i
-		k[i+1] = rotl(k[i], 3) ^ l[i+1]
+		l[i+1] = (k[i] + bits.RotateLeft64(l[i], -8)) ^ i
+		k[i+1] = bits.RotateLeft64(k[i], 3) ^ l[i+1]
 	}
 }

@@ -9,4 +9,4 @@ func EncryptASM(pt, ct, k []uint64)
 
 //go:noescape
 
-func ExpandEncryptASM(pt, ct, K []uint64)
+func ExpandEncryptASM(pt, ct, k []uint64)

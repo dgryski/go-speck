@@ -103,7 +103,7 @@ func BenchmarkSpeckEncrypt(b *testing.B) {
 	sink += c[0]
 }
 
-func BenchmarkSpeckEncrypASM(b *testing.B) {
+func BenchmarkSpeckEncryptASM(b *testing.B) {
 
 	k := make([]uint64, 32)
 	p := make([]uint64, 2)
