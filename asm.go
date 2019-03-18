@@ -8,12 +8,6 @@ import (
 	. "github.com/mmcloughlin/avo/reg"
 )
 
-// siphash 1-3
-const (
-	cROUND = 1
-	dROUND = 3
-)
-
 func speckRound(x, y Register, k Op) {
 	RORQ(Imm(8), x)
 	ADDQ(y, x)
