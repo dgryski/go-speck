@@ -7,10 +7,11 @@
 */
 package speck
 
-import "math/bits"
+import (
+	"math/bits"
+)
 
 func ExpandKeyAndEncrypt(pt, ct, K []uint64) {
-
 	B := K[1]
 	A := K[0]
 
@@ -37,7 +38,6 @@ func ExpandKeyAndEncrypt(pt, ct, K []uint64) {
 }
 
 func ExpandKeyAndDecrypt(pt, ct, K []uint64) {
-
 	B := K[1]
 	A := K[0]
 
@@ -63,9 +63,9 @@ func ExpandKeyAndDecrypt(pt, ct, K []uint64) {
 	ct[1] = ct1
 }
 
+/*
 func Encrypt(pt, ct, k []uint64) {
-	ct1 := pt[1]
-	ct0 := pt[0]
+	ct0, ct1, _ := pt[0], pt[1], k[31]
 
 	for i := 0; i < 32; i++ {
 		// encryption
@@ -76,13 +76,84 @@ func Encrypt(pt, ct, k []uint64) {
 		ct0 ^= ct1
 	}
 
-	ct[0] = ct0
-	ct[1] = ct1
+	ct[0], ct[1] = ct0, ct1
+}
+*/
+
+func Encrypt(pt, ct, k []uint64) {
+	ct0, ct1, _ := pt[0], pt[1], k[31]
+
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[0]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[1]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[2]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[3]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[4]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[5]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[6]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[7]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[8]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[9]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[10]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[11]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[12]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[13]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[14]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[15]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[16]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[17]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[18]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[19]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[20]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[21]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[22]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[23]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[24]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[25]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[26]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[27]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[28]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[29]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[30]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+	ct1 = (bits.RotateLeft64(ct1, -8) + ct0) ^ k[31]
+	ct0 = bits.RotateLeft64(ct0, 3) ^ ct1
+
+	ct[0], ct[1] = ct0, ct1
 }
 
-func Decrypt(pt, ct, k []uint64) {
-	ct0 := ct[0]
-	ct1 := ct[1]
+/*
+func decrypt(pt, ct, k []uint64) {
+	ct0, ct1, _ := ct[0], ct[1], k[31]
 
 	for i := 31; i >= 0; i-- {
 		// encryption
@@ -93,8 +164,79 @@ func Decrypt(pt, ct, k []uint64) {
 		ct1 = bits.RotateLeft64(ct1, 8)
 	}
 
-	pt[0] = ct0
-	pt[1] = ct1
+	pt[0], pt[1] = ct0, ct1
+}
+*/
+
+func Decrypt(pt, ct, k []uint64) {
+	ct0, ct1, _ := ct[0], ct[1], k[31]
+
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[31]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[30]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[29]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[28]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[27]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[26]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[25]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[24]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[23]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[22]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[21]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[20]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[19]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[18]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[17]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[16]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[15]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[14]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[13]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[12]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[11]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[10]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[9]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[8]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[7]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[6]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[5]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[4]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[3]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[2]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[1]-ct0, 8)
+	ct0 = bits.RotateLeft64(ct0^ct1, -3)
+	ct1 = bits.RotateLeft64(ct1^k[0]-ct0, 8)
+
+	pt[0], pt[1] = ct0, ct1
 }
 
 func ExpandKey(k, K []uint64) {
