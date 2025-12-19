@@ -2,7 +2,6 @@ package speck
 
 import (
 	"crypto/aes"
-	"encoding/binary"
 	"encoding/hex"
 	"reflect"
 	"testing"
@@ -10,13 +9,11 @@ import (
 	skipjack "github.com/dgryski/go-skipjack"
 )
 
-func unpack2x64(s string) []uint64 {
-	dst := make([]uint64, 2)
+func unpack2x64(s string) []byte {
+	dst := make([]byte, 16)
 	s8, _ := hex.DecodeString(s)
 
-	// test vectors are oddly backwards in the paper
-	dst[1] = binary.BigEndian.Uint64(s8[0:])
-	dst[0] = binary.BigEndian.Uint64(s8[8:])
+	copy(dst, s8)
 
 	return dst
 }
@@ -29,9 +26,9 @@ func Test(t *testing.T) {
 		cipher string
 	}{
 		{
-			"0f0e0d0c0b0a09080706050403020100",
-			"6c617669757165207469206564616d20",
-			"a65d9851797832657860fedf5c570d18",
+			"000102030405060708090a0b0c0d0e0f",
+			"206d616465206974206571756976616c",
+			"180d575cdffe60786532787951985da6",
 		},
 	}
 
@@ -41,7 +38,7 @@ func Test(t *testing.T) {
 		p64 := unpack2x64(tt.plain)
 		want := unpack2x64(tt.cipher)
 
-		got := make([]uint64, 2)
+		got := make([]byte, 16)
 
 		ExpandKeyAndEncrypt(p64, got, k64)
 		if !reflect.DeepEqual(got, want) {
@@ -56,7 +53,7 @@ func Test(t *testing.T) {
 			t.Errorf("Encrypt(...)=%x, want %x", got, want)
 		}
 
-		p := make([]uint64, 2)
+		p := make([]byte, 16)
 
 		Decrypt(p, got, rk)
 		if !reflect.DeepEqual(p, p64) {
@@ -69,28 +66,28 @@ var sink uint64
 
 func BenchmarkSpeckExpandEncrypt(b *testing.B) {
 
-	k := make([]uint64, 2)
-	p := make([]uint64, 2)
-	c := make([]uint64, 2)
+	k := make([]byte, 16)
+	p := make([]byte, 16)
+	c := make([]byte, 16)
 
 	for i := 0; i < b.N; i++ {
 		ExpandKeyAndEncrypt(p, c, k)
 	}
 
-	sink += c[0]
+	sink += uint64(c[0])
 }
 
 func BenchmarkSpeckEncrypt(b *testing.B) {
 
 	k := make([]uint64, 32)
-	p := make([]uint64, 2)
-	c := make([]uint64, 2)
+	p := make([]byte, 16)
+	c := make([]byte, 16)
 
 	for i := 0; i < b.N; i++ {
 		Encrypt(p, c, k)
 	}
 
-	sink += c[0]
+	sink += uint64(c[0])
 }
 
 // TEA, from https://en.wikipedia.org/wiki/Tiny_Encryption_Algorithm

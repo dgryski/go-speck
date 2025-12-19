@@ -2,15 +2,18 @@
 
 package speck
 
-import "math/bits"
+import (
+	"encoding/binary"
+	"math/bits"
+)
 
-func ExpandKeyAndEncrypt(pt, ct, K []uint64) {
+func ExpandKeyAndEncrypt(pt, ct, K []byte) {
 
-	B := K[1]
-	A := K[0]
+	B := binary.LittleEndian.Uint64(K[8:])
+	A := binary.LittleEndian.Uint64(K[0:])
 
-	ct0 := pt[0]
-	ct1 := pt[1]
+	ct0 := binary.LittleEndian.Uint64(pt[0:])
+	ct1 := binary.LittleEndian.Uint64(pt[8:])
 	for i := uint64(0); i < 32; i++ {
 		// encryption
 		ct1 = bits.RotateLeft64(ct1, -8)
@@ -27,13 +30,13 @@ func ExpandKeyAndEncrypt(pt, ct, K []uint64) {
 		A ^= B
 	}
 
-	ct[0] = ct0
-	ct[1] = ct1
+	binary.LittleEndian.PutUint64(ct[0:], ct0)
+	binary.LittleEndian.PutUint64(ct[8:], ct1)
 }
 
-func Encrypt(pt, ct, k []uint64) {
-	ct1 := pt[1]
-	ct0 := pt[0]
+func Encrypt(pt, ct []byte, k []uint64) {
+	ct0 := binary.LittleEndian.Uint64(pt[0:])
+	ct1 := binary.LittleEndian.Uint64(pt[8:])
 
 	for i := 0; i < 32; i++ {
 		// encryption
@@ -44,13 +47,13 @@ func Encrypt(pt, ct, k []uint64) {
 		ct0 ^= ct1
 	}
 
-	ct[0] = ct0
-	ct[1] = ct1
+	binary.LittleEndian.PutUint64(ct[0:], ct0)
+	binary.LittleEndian.PutUint64(ct[8:], ct1)
 }
 
-func Decrypt(pt, ct, k []uint64) {
-	ct0 := ct[0]
-	ct1 := ct[1]
+func Decrypt(pt, ct []byte, k []uint64) {
+	ct0 := binary.LittleEndian.Uint64(ct[0:])
+	ct1 := binary.LittleEndian.Uint64(ct[8:])
 
 	for i := 31; i >= 0; i-- {
 		// decryption
@@ -61,6 +64,6 @@ func Decrypt(pt, ct, k []uint64) {
 		ct1 = bits.RotateLeft64(ct1, 8)
 	}
 
-	pt[0] = ct0
-	pt[1] = ct1
+	binary.LittleEndian.PutUint64(pt[0:], ct0)
+	binary.LittleEndian.PutUint64(pt[8:], ct1)
 }
