@@ -58,7 +58,7 @@ func Decrypt(pt, ct, k []uint64) {
 	ct1 := ct[1]
 
 	for i := 31; i >= 0; i-- {
-		// encryption
+		// decryption
 		ct0 ^= ct1
 		ct0 = bits.RotateLeft64(ct0, -3)
 		ct1 ^= k[i]
