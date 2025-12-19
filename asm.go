@@ -26,7 +26,7 @@ func speckUnround(x, y Register, k Op) {
 }
 
 func makeEncrypt() {
-	TEXT("Encrypt", NOSPLIT, "func(pt, ct, k []uint64)")
+	TEXT("encryptCore", NOSPLIT, "func(pt, ct, k []uint64)")
 
 	pt := GP64()
 	Load(Param("pt").Base(), pt)
@@ -52,7 +52,7 @@ func makeEncrypt() {
 }
 
 func makeDecrypt() {
-	TEXT("Decrypt", NOSPLIT, "func(pt, ct, k []uint64)")
+	TEXT("decryptCore", NOSPLIT, "func(pt, ct, k []uint64)")
 
 	ct := GP64()
 	Load(Param("ct").Base(), ct)
@@ -77,40 +77,6 @@ func makeDecrypt() {
 	RET()
 }
 
-func makeExpandEncrypt() {
-	TEXT("ExpandKeyAndEncrypt", NOSPLIT, "func(pt, ct, k []uint64)")
-
-	pt := GP64()
-	Load(Param("pt").Base(), pt)
-
-	ct0 := GP64()
-	ct1 := GP64()
-	MOVQ(Mem{Base: pt}, ct0)
-	MOVQ(Mem{Base: pt, Disp: 8}, ct1)
-
-	k := GP64()
-	Load(Param("k").Base(), k)
-
-	a := GP64()
-	b := GP64()
-
-	MOVQ(Mem{Base: k}, a)
-	MOVQ(Mem{Base: k, Disp: 8}, b)
-
-	speckRound(ct1, ct0, a)
-	for i := 0; i < 31; i++ {
-		speckRound(b, a, Imm(uint64(i)))
-		speckRound(ct1, ct0, a)
-	}
-
-	ct := GP64()
-	Load(Param("ct").Base(), ct)
-	MOVQ(ct0, Mem{Base: ct})
-	MOVQ(ct1, Mem{Base: ct, Disp: 8})
-
-	RET()
-}
-
 func main() {
 	Package("github.com/dgryski/go-speck")
 
@@ -118,7 +84,6 @@ func main() {
 
 	makeEncrypt()
 	makeDecrypt()
-	makeExpandEncrypt()
 
 	Generate()
 }

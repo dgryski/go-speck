@@ -9,17 +9,12 @@ import (
 	skipjack "github.com/dgryski/go-skipjack"
 )
 
-func unpack2x64(s string) []byte {
-	dst := make([]byte, 16)
-	s8, _ := hex.DecodeString(s)
-
-	copy(dst, s8)
-
+func unpackHex(s string) []byte {
+	dst, _ := hex.DecodeString(s)
 	return dst
 }
 
-func Test(t *testing.T) {
-
+func TestCipher(t *testing.T) {
 	var tests = []struct {
 		key    string
 		plain  string
@@ -33,49 +28,29 @@ func Test(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		k64 := unpackHex(tt.key)
+		p64 := unpackHex(tt.plain)
+		want := unpackHex(tt.cipher)
 
-		k64 := unpack2x64(tt.key)
-		p64 := unpack2x64(tt.plain)
-		want := unpack2x64(tt.cipher)
-
-		got := make([]byte, 16)
-
-		ExpandKeyAndEncrypt(p64, got, k64)
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("ExpandKeyAndEncrypt(...)=%x, want %x", got, want)
+		c, err := New(k64)
+		if err != nil {
+			t.Fatalf("error constructing cipher: %v", err)
 		}
 
-		rk := make([]uint64, 32)
-
-		ExpandKey(rk, k64)
-		Encrypt(p64, got, rk)
+		got := make([]byte, BlockSize)
+		c.Encrypt(got, p64)
 		if !reflect.DeepEqual(got, want) {
-			t.Errorf("Encrypt(...)=%x, want %x", got, want)
+			t.Errorf("c.Encrypt(...)=%x, want %x", got, want)
 		}
 
-		p := make([]byte, 16)
-
-		Decrypt(p, got, rk)
-		if !reflect.DeepEqual(p, p64) {
-			t.Errorf("Decrypt(...)=%x, want %x", p, p64)
+		c.Decrypt(got, want)
+		if !reflect.DeepEqual(got, p64) {
+			t.Errorf("c.Decrypt(...)=%x, want %x", got, p64)
 		}
 	}
 }
 
 var sink uint64
-
-func BenchmarkSpeckExpandEncrypt(b *testing.B) {
-
-	k := make([]byte, 16)
-	p := make([]byte, 16)
-	c := make([]byte, 16)
-
-	for i := 0; i < b.N; i++ {
-		ExpandKeyAndEncrypt(p, c, k)
-	}
-
-	sink += uint64(c[0])
-}
 
 func BenchmarkSpeckEncrypt(b *testing.B) {
 
@@ -83,8 +58,11 @@ func BenchmarkSpeckEncrypt(b *testing.B) {
 	p := make([]byte, 16)
 	c := make([]byte, 16)
 
-	for i := 0; i < b.N; i++ {
-		Encrypt(p, c, k)
+	n := b.N / 2
+
+	for i := 0; i < n; i++ {
+		encryptCore(p, c, k)
+		encryptCore(c, p, k)
 	}
 
 	sink += uint64(c[0])
