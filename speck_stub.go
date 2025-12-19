@@ -1,3 +1,4 @@
+//go:build amd64
 // +build amd64
 
 package speck
@@ -6,6 +7,10 @@ package speck
 //go:noescape
 
 func EncryptASM(pt, ct, k []uint64)
+
+//go:noescape
+
+func DecryptASM(pt, ct, k []uint64)
 
 //go:noescape
 

@@ -72,6 +72,11 @@ func Test(t *testing.T) {
 		if !reflect.DeepEqual(p, p64) {
 			t.Errorf("Decrypt(...)=%x, want %x", p, p64)
 		}
+
+		DecryptASM(p, got, rk)
+		if !reflect.DeepEqual(p, p64) {
+			t.Errorf("DecryptASM(...)=%x, want %x", p, p64)
+		}
 	}
 }
 
