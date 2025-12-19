@@ -25,8 +25,8 @@ func speckUnround(x, y Register, k Op) {
 	ROLQ(Imm(8), x)
 }
 
-func makeEncryptASM() {
-	TEXT("EncryptASM", NOSPLIT, "func(pt, ct, k []uint64)")
+func makeEncrypt() {
+	TEXT("Encrypt", NOSPLIT, "func(pt, ct, k []uint64)")
 
 	pt := GP64()
 	Load(Param("pt").Base(), pt)
@@ -51,8 +51,8 @@ func makeEncryptASM() {
 	RET()
 }
 
-func makeDecryptASM() {
-	TEXT("DecryptASM", NOSPLIT, "func(pt, ct, k []uint64)")
+func makeDecrypt() {
+	TEXT("Decrypt", NOSPLIT, "func(pt, ct, k []uint64)")
 
 	ct := GP64()
 	Load(Param("ct").Base(), ct)
@@ -77,8 +77,8 @@ func makeDecryptASM() {
 	RET()
 }
 
-func makeExpandEncryptASM() {
-	TEXT("ExpandEncryptASM", NOSPLIT, "func(pt, ct, k []uint64)")
+func makeExpandEncrypt() {
+	TEXT("ExpandKeyAndEncrypt", NOSPLIT, "func(pt, ct, k []uint64)")
 
 	pt := GP64()
 	Load(Param("pt").Base(), pt)
@@ -114,9 +114,11 @@ func makeExpandEncryptASM() {
 func main() {
 	Package("github.com/dgryski/go-speck")
 
-	makeEncryptASM()
-	makeDecryptASM()
-	makeExpandEncryptASM()
+	ConstraintExpr("!purego")
+
+	makeEncrypt()
+	makeDecrypt()
+	makeExpandEncrypt()
 
 	Generate()
 }

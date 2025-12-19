@@ -48,11 +48,6 @@ func Test(t *testing.T) {
 			t.Errorf("ExpandKeyAndEncrypt(...)=%x, want %x", got, want)
 		}
 
-		ExpandEncryptASM(p64, got, k64)
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("ExpandEncryptASM(...)=%x, want %x", got, want)
-		}
-
 		rk := make([]uint64, 32)
 
 		ExpandKey(rk, k64)
@@ -61,21 +56,11 @@ func Test(t *testing.T) {
 			t.Errorf("Encrypt(...)=%x, want %x", got, want)
 		}
 
-		EncryptASM(p64, got, rk)
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("EncryptASM(...)=%x, want %x", got, want)
-		}
-
 		p := make([]uint64, 2)
 
 		Decrypt(p, got, rk)
 		if !reflect.DeepEqual(p, p64) {
 			t.Errorf("Decrypt(...)=%x, want %x", p, p64)
-		}
-
-		DecryptASM(p, got, rk)
-		if !reflect.DeepEqual(p, p64) {
-			t.Errorf("DecryptASM(...)=%x, want %x", p, p64)
 		}
 	}
 }
@@ -103,32 +88,6 @@ func BenchmarkSpeckEncrypt(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		Encrypt(p, c, k)
-	}
-
-	sink += c[0]
-}
-
-func BenchmarkSpeckEncryptASM(b *testing.B) {
-
-	k := make([]uint64, 32)
-	p := make([]uint64, 2)
-	c := make([]uint64, 2)
-
-	for i := 0; i < b.N; i++ {
-		EncryptASM(p, c, k)
-	}
-
-	sink += c[0]
-}
-
-func BenchmarkSpeckExpandEncryptASM(b *testing.B) {
-
-	k := make([]uint64, 2)
-	p := make([]uint64, 2)
-	c := make([]uint64, 2)
-
-	for i := 0; i < b.N; i++ {
-		ExpandEncryptASM(p, c, k)
 	}
 
 	sink += c[0]

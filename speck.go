@@ -1,10 +1,5 @@
-// Package speck implements the SPECK block cipher
-/*
-   https://eprint.iacr.org/2013/404
-   http://csrc.nist.gov/groups/ST/lwc-workshop2015/papers/session1-shors-paper.pdf
-   https://eprint.iacr.org/2017/560
+//go:build purego || !amd64
 
-*/
 package speck
 
 import "math/bits"
@@ -68,16 +63,4 @@ func Decrypt(pt, ct, k []uint64) {
 
 	pt[0] = ct0
 	pt[1] = ct1
-}
-
-func ExpandKey(k, K []uint64) {
-	l := make([]uint64, 32)
-
-	l[0] = K[1]
-	k[0] = K[0]
-
-	for i := uint64(0); i < 32-1; i++ {
-		l[i+1] = (k[i] + bits.RotateLeft64(l[i], -8)) ^ i
-		k[i+1] = bits.RotateLeft64(k[i], 3) ^ l[i+1]
-	}
 }
