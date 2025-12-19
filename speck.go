@@ -36,33 +36,6 @@ func ExpandKeyAndEncrypt(pt, ct, K []uint64) {
 	ct[1] = ct1
 }
 
-func ExpandKeyAndDecrypt(pt, ct, K []uint64) {
-
-	B := K[1]
-	A := K[0]
-
-	ct0 := pt[0]
-	ct1 := pt[1]
-	for i := uint64(0); i < 32; i++ {
-		// inline key expansion phase
-		A ^= B
-		A = bits.RotateLeft64(A, -3)
-		B ^= i
-		B -= A
-		B = bits.RotateLeft64(B, 8)
-
-		// decryption
-		ct0 ^= ct1
-		ct0 = bits.RotateLeft64(ct0, -3)
-		ct1 ^= A
-		ct1 -= ct0
-		ct1 = bits.RotateLeft64(ct1, 8)
-	}
-
-	ct[0] = ct0
-	ct[1] = ct1
-}
-
 func Encrypt(pt, ct, k []uint64) {
 	ct1 := pt[1]
 	ct0 := pt[0]
